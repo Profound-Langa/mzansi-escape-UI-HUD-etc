@@ -192,74 +192,85 @@ export function StartMenu({
             </header>
             <nav className="start-menu__nav" aria-label="Main menu">
               {user ? (
-                <>
-                  <p className="start-menu__signed-in" aria-live="polite">
-                    Signed in as {userLabel}
-                  </p>
-                  <p className="start-menu__options-sub">
-                    Wallet, unlocks, and records save to this account.
-                  </p>
-                </>
+                <p className="start-menu__signed-in" aria-live="polite">
+                  Signed in as {userLabel}
+                </p>
               ) : null}
               <p className="start-menu__wallet-badge" aria-live="polite">
                 Wallet: R {walletBalance}
               </p>
-              <button
-                type="button"
-                className="start-menu__pixel-btn"
-                onClick={onBeginGame}
-              >
-                New Game
-              </button>
-              <button
-                type="button"
-                className="start-menu__pixel-btn"
-                onClick={() => onNavigate('account')}
-              >
-                {user ? 'Account…' : 'Sign In…'}
-              </button>
-              <button
-                type="button"
-                className="start-menu__pixel-btn"
-                onClick={() => onNavigate('scoreboards')}
-              >
-                Scoreboards…
-              </button>
-              <button
-                type="button"
-                className="start-menu__pixel-btn"
-                onClick={() => onNavigate('instructions')}
-              >
-                How to Play
-              </button>
-              <button
-                type="button"
-                className="start-menu__pixel-btn"
-                onClick={() => onNavigate('options')}
-              >
-                Options…
-              </button>
-              <button
-                type="button"
-                className="start-menu__pixel-btn"
-                onClick={() => onNavigate('store')}
-              >
-                Store…
-              </button>
-              <button
-                type="button"
-                className="start-menu__pixel-btn"
-                onClick={() => onNavigate('levels')}
-              >
-                Levels…
-              </button>
-              <button
-                type="button"
-                className="start-menu__pixel-btn"
-                onClick={onExit}
-              >
-                Quit Game
-              </button>
+              <div className="start-menu__group">
+                <p className="start-menu__group-label">Play</p>
+                <button
+                  type="button"
+                  className="start-menu__pixel-btn start-menu__pixel-btn--primary"
+                  onClick={onBeginGame}
+                >
+                  New Game
+                </button>
+                <button
+                  type="button"
+                  className="start-menu__pixel-btn"
+                  onClick={() => onNavigate('levels')}
+                >
+                  Levels
+                </button>
+              </div>
+              <div className="start-menu__group">
+                <p className="start-menu__group-label">Progress</p>
+                <button
+                  type="button"
+                  className="start-menu__pixel-btn"
+                  onClick={() => onNavigate('account')}
+                >
+                  {user ? 'Account' : 'Sign in'}
+                </button>
+                <button
+                  type="button"
+                  className="start-menu__pixel-btn"
+                  onClick={() => onNavigate('scoreboards')}
+                >
+                  Scoreboards
+                </button>
+                <button
+                  type="button"
+                  className="start-menu__pixel-btn"
+                  onClick={() => onNavigate('store')}
+                >
+                  Store
+                </button>
+              </div>
+              <div className="start-menu__group">
+                <p className="start-menu__group-label">Help</p>
+                <button
+                  type="button"
+                  className="start-menu__pixel-btn"
+                  onClick={() => onNavigate('about')}
+                >
+                  About the game
+                </button>
+                <button
+                  type="button"
+                  className="start-menu__pixel-btn"
+                  onClick={() => onNavigate('instructions')}
+                >
+                  How to play
+                </button>
+                <button
+                  type="button"
+                  className="start-menu__pixel-btn"
+                  onClick={() => onNavigate('options')}
+                >
+                  Options
+                </button>
+                <button
+                  type="button"
+                  className="start-menu__pixel-btn start-menu__pixel-btn--quiet"
+                  onClick={onExit}
+                >
+                  Quit
+                </button>
+              </div>
             </nav>
           </>
         )}
@@ -421,6 +432,46 @@ export function StartMenu({
           </div>
         )}
         <ScoreboardsPanel menuScreen={menuScreen} onNavigate={onNavigate} />
+        {menuScreen === 'about' && (
+          <div className="start-menu__sub" aria-label="About the game">
+            <h2 className="start-menu__sub-title">About the game</h2>
+            <div className="start-menu__sub-body">
+              <p className="start-menu__about-kicker">The reason</p>
+              <p>
+                People remember a street they had to cross. Mzansi Escape puts
+                real South African risks inside play, so the lesson lands while
+                you are moving, not in a notice you skip.
+              </p>
+              <p className="start-menu__about-kicker">The problem</p>
+              <p>
+                Minibus taxis, unsafe stations, Day Zero, loadshedding, harm on
+                the Cape Flats, and floods in Soweto are everyday dangers.
+                Advice exists. It rarely meets you at the moment you choose.
+              </p>
+              <p className="start-menu__about-kicker">The solution</p>
+              <p>
+                You play the route. Each level is a real place and one hazard
+                you cannot punch through. Finish the task — dodge, pay the
+                fare, restore the water, stay hidden, sandbag the stoep — and
+                the next step appears when it matters, including who to call.
+              </p>
+              <p className="start-menu__about-kicker">The impact</p>
+              <p>
+                You leave with the street still in mind and a practical
+                response: high ground in a flood, fare before the bus, care
+                after harm, and the habit of looking twice. The score is your
+                time. The point is the choice you would make outside the game.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="start-menu__pixel-btn"
+              onClick={() => onNavigate('main')}
+            >
+              Back
+            </button>
+          </div>
+        )}
         {menuScreen === 'instructions' && (
           <div className="start-menu__sub">
             <h2 className="start-menu__sub-title">How to play</h2>

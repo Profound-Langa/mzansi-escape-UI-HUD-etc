@@ -19,9 +19,11 @@ export function FloodImpactOverlay({ onContinue }) {
     >
       <div className="gbv-overlay__content">
         <p id="flood-overlay-stat" className="gbv-overlay__stat">
-          Informal settlements sit on some of Joburg’s worst flood lines.
+          The surge hit the gate and stopped.
         </p>
-        <p className="gbv-overlay__line">You made it to high ground. Not every street does.</p>
+        <p className="gbv-overlay__line">
+          You sandbagged the stoep in time. Your family is on the hill. The street below is under.
+        </p>
 
         <div className="gbv-overlay__help">
           <p className="gbv-overlay__help-intro">If someone is trapped in flood water:</p>
@@ -33,7 +35,8 @@ export function FloodImpactOverlay({ onContinue }) {
         </div>
 
         <p className="gbv-overlay__link">
-          Stay on the ridge. Moving water as shallow as 15 cm can knock you down.
+          Informal settlements sit on some of Joburg’s worst flood lines. Not every house gets those bags.
+          Moving water as shallow as 15 cm can knock you down.
         </p>
 
         <button ref={buttonRef} type="button" className="gbv-overlay__continue" onClick={onContinue}>

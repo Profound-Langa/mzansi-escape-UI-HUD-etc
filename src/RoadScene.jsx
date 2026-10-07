@@ -858,6 +858,8 @@ export function RoadScene() {
             hearts={hud.hearts ?? 1}
             hp={hud.hp ?? 100}
             maxHp={hud.maxHp ?? 100}
+            surgeLeft={hud.surgeLeft ?? 0}
+            bagsPlaced={hud.bagsPlaced ?? 0}
           />
         </>
         )}

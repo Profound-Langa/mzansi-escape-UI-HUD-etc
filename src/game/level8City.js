@@ -24,6 +24,15 @@ export const LEVEL8_ANCHORS = {
   home: { x: -34, z: -96 },
 }
 
+/** Yard piles west of Vilakazi Ridge. The win task is to fill all three. */
+export const LEVEL8_SANDBAGS = [
+  { x: -26, z: -88 },
+  { x: -44, z: -96 },
+  { x: -30, z: -106 },
+]
+export const LEVEL8_BAG_RADIUS = 2.7
+export const LEVEL8_SURGE_S = 72
+
 export const LEVEL8_CHECKPOINTS = [
   { id: 'start', x: 0, z: 96 },
   { id: 'clinic', x: 48, z: 40 },
@@ -73,7 +82,11 @@ export function navStreetGuide(beats) {
   if (!beats.spaza) {
     return { street: 'Spaza Lane', turn: 'back to the spaza on this street' }
   }
-  return { street: 'Vilakazi Ridge', turn: 'SOUTH, then WEST to Home (off the road)' }
+  const left = beats.bags ? beats.bags.filter((done) => !done).length : 3
+  if (left > 0) {
+    return { street: 'Home yard', turn: `WEST off the ridge — sandbag the stoep (${3 - left}/3)` }
+  }
+  return { street: 'Home', turn: 'The stoep is holding' }
 }
 
 export const LEVEL8_CHECKPOINT_RADIUS = 8

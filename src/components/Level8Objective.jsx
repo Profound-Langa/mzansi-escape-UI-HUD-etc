@@ -33,6 +33,8 @@ export function Level8Objective({
   hearts = 1,
   hp = 100,
   maxHp = 100,
+  surgeLeft = 0,
+  bagsPlaced = 0,
 }) {
   const [dismissedPrompt, setDismissedPrompt] = useState('')
   const [viewIndex, setViewIndex] = useState(getLevel6ViewIndex)
@@ -91,7 +93,13 @@ export function Level8Objective({
           Water stage {waterStage}/3
           {carryingCrate ? ' · Carrying crate' : ''}
           {rainHeavy ? ' · Heavy rain' : ''}
+          {bagsPlaced > 0 || surgeLeft > 0 ? ` · Sandbags ${bagsPlaced}/3` : ''}
         </p>
+        {surgeLeft > 0 ? (
+          <p className={'level8-surge' + (surgeLeft <= 20 ? ' level8-surge--hot' : '')}>
+            SURGE {surgeLeft}s — sandbag the stoep
+          </p>
+        ) : null}
         {sprinting ? (
           <p className="level6-strikes__stance">SPRINTING — watch the dips</p>
         ) : null}
@@ -148,7 +156,7 @@ export function Level8Objective({
       </div>
 
       <p className="level6-controls" aria-hidden>
-        WASD — move &nbsp;|&nbsp; SHIFT — sprint &nbsp;|&nbsp; E — talk / crate / note
+        WASD — move &nbsp;|&nbsp; SHIFT — sprint &nbsp;|&nbsp; E — talk / crate / sandbag / note
       </p>
     </>
   )

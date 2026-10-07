@@ -1,4 +1,4 @@
-/* Title screen: Minecraft-style layout + South African landscape (CSS only) */
+/* Title screen over the live street. Readable type, South African colour accents. */
 .start-menu--retro {
   position: fixed;
   inset: 0;
@@ -11,11 +11,10 @@
   padding: 0;
   overflow: hidden;
   color: #fff;
-  font-family: 'Press Start 2P', cursive, monospace;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
+  font-size: 16px;
   text-align: center;
   pointer-events: auto;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
 }
 
 /* In-game overlays (pause, level complete): dim glass, not the title panorama */
@@ -30,11 +29,32 @@
   backdrop-filter: blur(4px);
 }
 
-/* Main menu sits over the live road scene — no opaque backdrop */
+/* Main menu sits over the live road scene — no opaque backdrop.
+   The screen itself scrolls, so the bar stays on the viewport edge. */
 .start-menu--title-screen {
-  justify-content: space-between;
+  justify-content: flex-start;
   background: transparent;
   box-shadow: none;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 182, 18, 0.9) transparent;
+}
+
+.start-menu--title-screen::-webkit-scrollbar {
+  width: 12px;
+}
+
+.start-menu--title-screen::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.start-menu--title-screen::-webkit-scrollbar-thumb {
+  background: rgba(255, 182, 18, 0.85);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
 }
 
 .start-menu--title-screen::before,
@@ -46,6 +66,14 @@
 .start-menu--title-screen .start-menu__mc-footer {
   position: relative;
   z-index: 1;
+}
+
+.start-menu--title-screen .start-menu__body {
+  overflow: visible;
+  flex: none;
+  width: 100%;
+  max-width: none;
+  padding-right: 8px;
 }
 
 .start-menu--title-screen .start-menu__mc-footer {
@@ -70,11 +98,15 @@
 }
 
 .start-menu--title-screen .start-menu__pixel-btn {
-  background: rgba(0, 0, 0, 0.38);
+  background: rgba(16, 18, 20, 0.58);
 }
 
 .start-menu--title-screen .start-menu__pixel-btn:hover {
-  background: rgba(20, 24, 28, 0.62);
+  background: rgba(0, 122, 77, 0.42);
+}
+
+.start-menu--title-screen .start-menu__pixel-btn--primary {
+  background: #007a4d;
 }
 
 .start-menu__body {
@@ -93,9 +125,19 @@
 .start-menu__brand {
   position: relative;
   margin: 0 auto 24px;
-  padding: 0 12px;
+  padding: 0 12px 14px;
   image-rendering: auto;
   -webkit-font-smoothing: antialiased;
+}
+
+.start-menu__brand::after {
+  content: '';
+  display: block;
+  width: 84px;
+  height: 4px;
+  margin: 12px auto 0;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #007a4d, #ffb612, #ffffff, #de3831, #002395, #141414);
 }
 
 .start-menu__logo {
@@ -123,16 +165,11 @@
   grid-row: 1;
   margin: 0;
   padding: 3px 0 6px;
-  font-family:
-    'Archivo Black',
-    Impact,
-    'Arial Black',
-    Arial,
-    sans-serif;
+  font-family: 'Bebas Neue', 'Arial Narrow', Impact, sans-serif;
   font-weight: 400;
-  font-size: clamp(2rem, 10vw, 4.6rem);
-  line-height: 0.94;
-  letter-spacing: -0.01em;
+  font-size: clamp(3.2rem, 14vw, 6.4rem);
+  line-height: 0.86;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   text-align: center;
 }
@@ -144,7 +181,7 @@
   color: transparent;
   -webkit-text-fill-color: transparent;
   paint-order: stroke fill;
-  -webkit-text-stroke-width: clamp(6px, 0.078em, 14px);
+  -webkit-text-stroke-width: clamp(3px, 0.045em, 8px);
   -webkit-text-stroke-color: #adb4be;
   text-shadow:
     1px 1px 0 rgba(236, 240, 245, 0.55),
@@ -212,11 +249,52 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 8px;
+  gap: 14px;
   width: 100%;
   max-width: 24rem;
   margin: 8px auto 0;
-  padding: 0;
+  padding: 16px 16px 16px 22px;
+  position: relative;
+  border-radius: 18px;
+  background: rgba(10, 14, 16, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+}
+
+.start-menu__nav::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 16px;
+  bottom: 16px;
+  width: 4px;
+  border-radius: 4px;
+  background: linear-gradient(
+    180deg,
+    #007a4d 0 22%,
+    #ffb612 22% 42%,
+    #ffffff 42% 48%,
+    #de3831 48% 68%,
+    #002395 68% 86%,
+    #141414 86% 100%
+  );
+}
+
+.start-menu__group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.start-menu__group-label {
+  margin: 0;
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #ffb612;
 }
 
 .start-menu__level-select {
@@ -227,12 +305,13 @@
 
 .start-menu__level-select-heading {
   margin: 0 0 8px;
-  font-family: 'Press Start 2P', cursive, monospace;
-  font-size: clamp(0.38rem, 1.35vw, 0.44rem);
-  line-height: 1.5;
-  letter-spacing: 0.08em;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.72);
+  color: #ffb612;
   text-align: center;
 }
 
@@ -246,12 +325,14 @@
   margin: 0;
   min-height: 3.25rem;
   padding: 10px 6px;
-  font-family: 'Press Start 2P', cursive, monospace;
-  font-size: clamp(0.42rem, 1.5vw, 0.5rem);
-  line-height: 1.4;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.2;
   color: #f5f5f5;
-  background: rgba(0, 0, 0, 0.42);
-  border: 1px solid rgba(210, 210, 215, 0.45);
+  background: rgba(16, 18, 20, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
   cursor: pointer;
   box-shadow:
     inset 0 2px 0 rgba(255, 255, 255, 0.07),
@@ -284,9 +365,9 @@
 }
 
 .start-menu__level-block--selected {
-  color: #ffffcc;
-  border-color: rgba(255, 255, 230, 0.75);
-  background: rgba(36, 40, 48, 0.75);
+  color: #fff;
+  border-color: #ffb612;
+  background: rgba(0, 122, 77, 0.72);
 }
 
 .start-menu__level-block--locked:hover,
@@ -297,42 +378,42 @@
   transform: none;
 }
 
-/* Minecraft-like buttons: semi-transparent, light outline */
+/* Clear menu actions: one primary, the rest quiet. */
 .start-menu__pixel-btn {
   width: 100%;
   margin: 0;
-  padding: 14px 18px;
-  font-family: 'Press Start 2P', cursive, monospace;
-  font-size: clamp(0.42rem, 1.5vw, 0.48rem);
-  line-height: 1.45;
-  color: #f5f5f5;
-  background: rgba(0, 0, 0, 0.42);
-  border: 1px solid rgba(210, 210, 215, 0.45);
-  border-radius: 0;
+  padding: 12px 16px;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+  color: #f7f7f5;
+  background: rgba(16, 18, 20, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
   cursor: pointer;
   text-align: center;
-  box-shadow:
-    inset 0 2px 0 rgba(255, 255, 255, 0.07),
-    0 2px 8px rgba(0, 0, 0, 0.35);
+  box-shadow: none;
   transition:
-    background 0.1s,
-    color 0.1s,
-    border-color 0.1s;
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
 }
 
 .start-menu__pixel-btn:hover {
-  background: rgba(36, 40, 48, 0.75);
-  color: #ffffcc;
-  border-color: rgba(255, 255, 230, 0.55);
+  background: rgba(0, 122, 77, 0.38);
+  color: #fff;
+  border-color: rgba(255, 182, 18, 0.75);
 }
 
 .start-menu__pixel-btn:focus-visible {
-  outline: 2px solid #ffff66;
+  outline: 2px solid #ffb612;
   outline-offset: 2px;
 }
 
 .start-menu__pixel-btn:active {
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 35, 149, 0.45);
   transform: translateY(1px);
 }
 
@@ -342,12 +423,37 @@
   transform: none;
 }
 
+.start-menu__pixel-btn--primary {
+  background: #007a4d;
+  border-color: #04663f;
+  color: #fff;
+}
+
+.start-menu__pixel-btn--primary:hover,
+.start-menu--title-screen .start-menu__pixel-btn--primary:hover {
+  background: #04915c;
+  color: #fff;
+  border-color: #ffb612;
+}
+
+.start-menu__pixel-btn--quiet {
+  background: transparent;
+  border-color: transparent;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.start-menu__pixel-btn--quiet:hover {
+  background: rgba(222, 56, 49, 0.22);
+  border-color: rgba(222, 56, 49, 0.45);
+  color: #fff;
+}
+
 .start-menu__signed-in {
   margin: 0 0 4px;
   padding: 0 4px;
-  color: rgba(255, 255, 204, 0.9);
-  font-family: 'Press Start 2P', cursive, monospace;
-  font-size: clamp(0.28rem, 1vw, 0.34rem);
+  color: rgba(255, 255, 255, 0.9);
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
+  font-size: 0.95rem;
   line-height: 1.6;
   text-align: center;
   word-break: break-word;
@@ -357,13 +463,14 @@
   margin: 0 0 10px;
   padding: 8px 10px;
   color: #ffe27a;
-  font-family: 'Press Start 2P', cursive, monospace;
-  font-size: clamp(0.32rem, 1.1vw, 0.4rem);
-  line-height: 1.5;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.4;
   text-align: center;
-  background: rgba(0, 0, 0, 0.38);
-  border: 2px solid rgba(201, 162, 39, 0.55);
-  border-radius: 4px;
+  background: rgba(10, 14, 16, 0.45);
+  border: 1px solid rgba(255, 182, 18, 0.7);
+  border-radius: 999px;
 }
 
 .start-menu__wallet-badge--store {
@@ -390,7 +497,7 @@
   gap: 0.75rem;
   margin: 1rem 0 0.75rem;
   color: rgba(210, 210, 215, 0.55);
-  font-family: 'Press Start 2P', cursive, monospace;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
   font-size: clamp(0.26rem, 0.9vw, 0.32rem);
 }
 
@@ -412,18 +519,20 @@
 .start-menu__auth-tab {
   margin: 0;
   padding: 10px 8px;
-  font-family: 'Press Start 2P', cursive, monospace;
-  font-size: clamp(0.32rem, 1.1vw, 0.38rem);
-  color: rgba(245, 245, 245, 0.7);
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(245, 245, 245, 0.78);
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(210, 210, 215, 0.3);
+  border-radius: 8px;
   cursor: pointer;
 }
 
 .start-menu__auth-tab--active {
-  color: #ffffcc;
-  border-color: rgba(255, 255, 230, 0.55);
-  background: rgba(36, 40, 48, 0.75);
+  color: #fff;
+  border-color: #ffb612;
+  background: rgba(0, 122, 77, 0.55);
 }
 
 .start-menu__auth-form {
@@ -438,7 +547,7 @@
   flex-direction: column;
   gap: 0.35rem;
   color: rgba(245, 245, 245, 0.85);
-  font-family: 'Press Start 2P', cursive, monospace;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
   font-size: clamp(0.28rem, 1vw, 0.34rem);
   line-height: 1.5;
   text-align: left;
@@ -453,19 +562,19 @@
   color: #f5f5f5;
   background: rgba(0, 0, 0, 0.55);
   border: 1px solid rgba(210, 210, 215, 0.4);
-  border-radius: 0;
+  border-radius: 8px;
 }
 
 .start-menu__auth-input:focus {
-  outline: 2px solid #ffff66;
+  outline: 2px solid #ffb612;
   outline-offset: 1px;
 }
 
 .start-menu__auth-error {
   margin: 0.5rem 0 0.75rem;
   color: #ff8a8a;
-  font-family: 'Press Start 2P', cursive, monospace;
-  font-size: clamp(0.26rem, 0.95vw, 0.32rem);
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
+  font-size: 0.9rem;
   line-height: 1.6;
   text-align: center;
 }
@@ -474,8 +583,10 @@
   max-width: min(94vw, 36rem);
 }
 
-.start-menu--title-screen .start-menu__sub--scoreboards {
-  max-height: min(72svh, 640px);
+.start-menu--title-screen .start-menu__sub--scoreboards,
+.start-menu--title-screen .start-menu__sub--store {
+  max-height: none;
+  overflow: visible;
 }
 
 .start-menu__score-global {
@@ -558,7 +669,7 @@
   width: 100%;
   margin: 0.75rem 0 1rem;
   border-collapse: collapse;
-  font-family: 'Press Start 2P', cursive, monospace;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
   font-size: clamp(0.26rem, 0.95vw, 0.34rem);
   line-height: 1.55;
   color: #f5f5f5;
@@ -669,23 +780,23 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     0 8px 28px rgba(0, 0, 0, 0.25);
   border-radius: 0;
-  max-height: min(62svh, 520px);
-  overflow-y: auto;
+  max-height: none;
+  overflow: visible;
 }
 
 .start-menu__sub-title {
   margin: 0 0 16px;
-  font-size: clamp(0.5rem, 1.8vw, 0.6rem);
-  font-weight: 400;
+  font-size: 1.5rem;
+  font-weight: 700;
   color: #fff;
-  text-shadow: 1px 1px 0 #444;
+  text-shadow: none;
 }
 
 .start-menu__sub-body {
   width: 100%;
   margin: 0 0 20px;
   text-align: left;
-  font-size: clamp(0.38rem, 1.25vw, 0.5rem);
+  font-size: 1rem;
   line-height: 1.7;
   color: #d0d0d0;
 }
@@ -698,6 +809,19 @@
   margin: 0 0 8px;
   color: #fff;
   font-size: 0.9em;
+}
+
+.start-menu__about-kicker {
+  margin: 14px 0 4px;
+  color: #ffb612;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.start-menu__about-kicker:first-child {
+  margin-top: 0;
 }
 
 .start-menu__sub-list {
@@ -771,7 +895,7 @@
 
 .start-menu__options-heading {
   margin: 0 0 12px;
-  font-family: 'Press Start 2P', cursive, monospace;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
   font-size: clamp(0.36rem, 1.2vw, 0.46rem);
   line-height: 1.45;
   color: #d4c89a;
@@ -857,7 +981,7 @@
   justify-content: center;
   padding: 8px;
   box-sizing: border-box;
-  font-family: 'Press Start 2P', cursive, monospace;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
   font-size: clamp(0.34rem, 1.2vw, 0.42rem);
   line-height: 1.4;
   color: #ffe27a;
@@ -877,7 +1001,7 @@
 .start-menu__store-price {
   margin: 0;
   padding: 0 8px 8px;
-  font-family: 'Press Start 2P', cursive, monospace;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
   font-size: clamp(0.32rem, 1.1vw, 0.4rem);
   line-height: 1.4;
   color: #ffe27a;
@@ -888,7 +1012,7 @@
 .start-menu__store-rarity {
   margin: 0;
   padding: 0 8px 4px;
-  font-family: 'Press Start 2P', cursive, monospace;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
   font-size: clamp(0.28rem, 1vw, 0.34rem);
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -935,7 +1059,7 @@
 
 .start-menu__char-name {
   padding: 10px 8px 12px;
-  font-family: 'Press Start 2P', cursive, monospace;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
   font-size: clamp(0.38rem, 1.3vw, 0.5rem);
   line-height: 1.3;
   color: #e8e8e8;
@@ -989,7 +1113,7 @@
   justify-content: center;
   background: #000;
   color: #fff;
-  font-family: 'Press Start 2P', cursive, monospace;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
   font-size: clamp(0.45rem, 1.6vw, 0.55rem);
   line-height: 1.6;
   border: none;
@@ -1031,7 +1155,7 @@
   transform: translateX(-50%);
   margin: 0;
   color: rgba(255, 255, 255, 0.75);
-  font-family: 'Press Start 2P', cursive, monospace;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
   font-size: clamp(0.28rem, 1vw, 0.38rem);
   letter-spacing: 0.04em;
   text-align: center;
@@ -1050,7 +1174,7 @@
   transform: translate(-50%, -50%);
   color: #ff6b6b;
   background: #000;
-  font-family: 'Press Start 2P', cursive, monospace;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
   font-size: clamp(0.35rem, 1.2vw, 0.45rem);
   line-height: 1.6;
   border: 2px solid #4a1a1a;
@@ -1088,7 +1212,7 @@
   padding: 8px 10px;
   pointer-events: none;
   color: #ffe27a;
-  font-family: 'Press Start 2P', cursive, monospace;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
   font-size: clamp(0.32rem, 1.1vw, 0.4rem);
   line-height: 1.45;
   background:
@@ -1120,7 +1244,7 @@
 
 .game-pause-toolbar__btn {
   padding: 10px 16px;
-  font-family: 'Press Start 2P', cursive, monospace;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
   font-size: clamp(0.35rem, 1.2vw, 0.42rem);
   line-height: 1.4;
   color: #f5f5f5;
@@ -1460,7 +1584,7 @@
   margin: 0;
   padding: 16px 28px;
   max-width: min(90vw, 20rem);
-  font-family: 'Press Start 2P', cursive, monospace;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
   font-size: clamp(0.4rem, 1.45vw, 0.52rem);
   line-height: 1.55;
   letter-spacing: 0.05em;
@@ -1894,6 +2018,23 @@
   color: #ff8fa3;
 }
 
+.level8-surge {
+  margin: 0.28rem 0 0;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #ffe566;
+}
+
+.level8-surge--hot {
+  color: #ff8a80;
+  animation: level8-surge-pulse 0.7s ease-in-out infinite;
+}
+
+@keyframes level8-surge-pulse {
+  50% { opacity: 0.45; }
+}
+
 .level8-fail-overlay__actions {
   display: flex;
   flex-direction: column;
@@ -1959,4 +2100,34 @@
   box-shadow: none;
   background: #7a9ebc;
   box-sizing: border-box;
+}
+
+/* Readable interface type. Pixel sizes were for a display font. */
+.start-menu__signed-in,
+.start-menu__auth-label,
+.start-menu__auth-error,
+.start-menu__options-sub,
+.start-menu__store-price,
+.start-menu__store-rarity,
+.wallet-hud,
+.game-level-briefing__setting,
+.game-new-record-toast {
+  font-size: 0.95rem;
+}
+
+.game-pause-toolbar__btn {
+  font-size: 0.95rem;
+  font-weight: 650;
+  border-radius: 10px;
+  background: rgba(10, 14, 16, 0.78);
+  border: 1px solid rgba(255, 182, 18, 0.65);
+}
+
+.game-pause-toolbar__btn:hover {
+  background: #007a4d;
+  border-color: #ffb612;
+}
+
+.game-level-briefing__label {
+  color: #ffb612;
 }

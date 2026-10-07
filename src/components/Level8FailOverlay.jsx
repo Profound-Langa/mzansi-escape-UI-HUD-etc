@@ -18,7 +18,9 @@ export function Level8FailOverlay({
   const headline =
     failReason === 'taxi'
       ? 'A taxi knocked you down.'
-      : 'The flood soaked you out.'
+      : failReason === 'surge'
+        ? 'The surge took the stoep.'
+        : 'The flood soaked you out.'
 
   return (
     <div

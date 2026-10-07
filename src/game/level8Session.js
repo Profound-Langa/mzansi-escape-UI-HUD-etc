@@ -8,8 +8,9 @@ import {
   LEVEL8_ANCHORS,
   LEVEL8_CHECKPOINTS,
   LEVEL8_MAX_SOAKINGS,
+  LEVEL8_SANDBAGS,
   LEVEL8_SOAK_BONUS_MS,
-  LEVEL8_WIN_RADIUS,
+  LEVEL8_SURGE_S,
   LEVEL8_WORLD_BOUNDS,
   navStreetGuide,
 } from './level8City.js'
@@ -24,6 +25,7 @@ import {
   createLevel8Beats,
   dropCrate,
   interactPrompt,
+  bagsPlaced,
   navTarget,
   neighboursDone,
   resetLevel8Beats,
@@ -64,6 +66,7 @@ export const LEVEL8_INVULN_TIME = 0.9
 export const LEVEL8_START_HEARTS = 1
 export const LEVEL8_GAME_OVER_COPY = 'The water took you. Get to high ground next time.'
 export const LEVEL8_TAXI_FAIL_COPY = 'A taxi knocked you down. The mission is over.'
+export const LEVEL8_SURGE_FAIL_COPY = 'The surge took the stoep. The sandbags were not finished.'
 export const LEVEL8_NO_COMBAT_COPY = "You can't punch a flood."
 
 export const LEVEL8_NAVIGATOR = {
@@ -72,11 +75,11 @@ export const LEVEL8_NAVIGATOR = {
   school: 'South on Vilakazi Ridge, then EAST onto Spaza Lane.',
   spaza: 'Crate’s dry. Stay on Spaza Lane, then Vilakazi Ridge south to Home.',
   crate: 'Got the crate. Follow Spaza Lane back to the shop.',
-  homeNav: 'All three checked. Stay on Vilakazi Ridge south — Home is on the hill.',
+  homeNav: 'SURGE. WEST off Vilakazi Ridge. Sandbag the three yellow rings before the water hits the stoep.',
   soak1: 'Close. Stay on Vilakazi Ridge.',
   soak2: "One more soaking and you’re done. High ground only — Vilakazi Ridge.",
   nearWater: 'Current. Step back onto the named street.',
-  win: 'You made it. The house is above the waterline.',
+  win: 'The bags held. The house is above the waterline.',
 }
 
 const CAM_OFFSET = new THREE.Vector3(0, 5.8, 11)
@@ -169,6 +172,39 @@ export function createLevel8Session(deps) {
   const heartData = buildLevel8HeartData()
   const heartMeshes = createLevel8HeartMeshes(heartData)
   city.group.add(heartMeshes.group)
+  const sandbagGeo = new THREE.BoxGeometry(1.15, 0.36, 0.58)
+  const sandbagIdle = new THREE.MeshStandardMaterial({ color: 0x8d6e63, roughness: 0.92 })
+  const sandbagPlaced = new THREE.MeshStandardMaterial({
+    color: 0xd7c4a3,
+    emissive: 0xffe082,
+    emissiveIntensity: 0.35,
+    roughness: 0.8,
+  })
+  const sandbagGroup = new THREE.Group()
+  sandbagGroup.name = 'level8-sandbags'
+  const sandbagItems = LEVEL8_SANDBAGS.map((spot) => {
+    const stack = new THREE.Group()
+    const bag = new THREE.Mesh(sandbagGeo, sandbagIdle)
+    bag.position.y = 0.2
+    bag.castShadow = true
+    const marker = new THREE.Mesh(
+      new THREE.RingGeometry(0.85, 1.15, 24),
+      new THREE.MeshBasicMaterial({
+        color: 0xffe566,
+        transparent: true,
+        opacity: 0.45,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+      })
+    )
+    marker.rotation.x = -Math.PI / 2
+    marker.position.y = 0.08
+    stack.add(bag, marker)
+    stack.position.set(spot.x, 0, spot.z)
+    sandbagGroup.add(stack)
+    return { bag, marker }
+  })
+  city.group.add(sandbagGroup)
   const navArrow = createNavArrow(city.group, { color: 0x7ee0ff })
   const beats = createLevel8Beats()
   const soak = createSoakTracker()
@@ -196,6 +232,7 @@ export function createLevel8Session(deps) {
   let invulnT = 0
   let failReason = 'soak'
   let stormLocked = false
+  let surgeLeft = 0
   let respawnMs = 0
   let graceT = 0
   let flashT = 0
@@ -220,6 +257,18 @@ export function createLevel8Session(deps) {
   const camTarget = new THREE.Vector3()
   const camLook = new THREE.Vector3()
   const camOffset = new THREE.Vector3()
+
+  const paintSandbags = () => {
+    const missionOn = neighboursDone(beats) >= 3
+    beats.bags.forEach((on, i) => {
+      const item = sandbagItems[i]
+      if (!item) return
+      item.bag.material = on ? sandbagPlaced : sandbagIdle
+      item.bag.scale.y = on ? 2.6 : 1
+      item.bag.position.y = on ? 0.5 : 0.2
+      item.marker.visible = missionOn && !on
+    })
+  }
 
   const carryCrateVisual = () => {
     if (!beats.carrying) {
@@ -319,6 +368,8 @@ export function createLevel8Session(deps) {
       checkpointFlashAt,
       soakFlashAt,
       rainLeft > 0 || stormLocked,
+      Math.ceil(surgeLeft),
+      bagsPlaced(beats),
     ].join('|')
     if (sig === lastHudSig) return
     lastHudSig = sig
@@ -341,6 +392,8 @@ export function createLevel8Session(deps) {
       neighboursDone: nDone,
       waterStage: city.getWaterStage(),
       rainHeavy: rainLeft > 0 || stormLocked,
+      surgeLeft: Math.ceil(surgeLeft),
+      bagsPlaced: bagsPlaced(beats),
       coins: tipsCollected,
       checkpointFlashAt,
       soakFlashAt,
@@ -362,7 +415,12 @@ export function createLevel8Session(deps) {
       hp: reason === 'taxi' ? 0 : hp,
       maxHp: LEVEL8_MAX_HP,
       hearts,
-      navigatorMessage: reason === 'taxi' ? LEVEL8_TAXI_FAIL_COPY : LEVEL8_GAME_OVER_COPY,
+      navigatorMessage:
+        reason === 'taxi'
+          ? LEVEL8_TAXI_FAIL_COPY
+          : reason === 'surge'
+            ? LEVEL8_SURGE_FAIL_COPY
+            : LEVEL8_GAME_OVER_COPY,
       coins: tipsCollected,
     }))
   }
@@ -376,6 +434,8 @@ export function createLevel8Session(deps) {
     invulnT = 1.4
     graceT = GRACE_AFTER_RESPAWN
     if (soakingsUsed >= LEVEL8_MAX_SOAKINGS) soakingsUsed = LEVEL8_MAX_SOAKINGS - 1
+    if (beats.spaza && bagsPlaced(beats) < 3) surgeLeft = Math.max(surgeLeft, 40)
+    if (beats.spaza) people.setPace(1.55)
     respawnAtCheckpoint()
     lastHudSig = ''
     setHud((h) => ({
@@ -450,6 +510,10 @@ export function createLevel8Session(deps) {
       showPrompt('Check the clinic, school and spaza before you go home.')
       return
     }
+    if (bagsPlaced(beats) < 3) {
+      showPrompt('Sandbag the stoep. Three piles. The surge does not wait.')
+      return
+    }
     won = true
     gameState.won = true
     playLevelComplete()
@@ -457,9 +521,10 @@ export function createLevel8Session(deps) {
     const unused = Math.max(0, LEVEL8_MAX_SOAKINGS - soakingsUsed)
     const allTips = tipsCollected >= tipData.length
     const rawMs = Math.round(runElapsedMs)
+    const surgeBonus = Math.round(Math.max(0, surgeLeft) * 800)
     const timeMs = Math.max(
       1000,
-      rawMs - unused * LEVEL8_SOAK_BONUS_MS - (allTips ? LEVEL8_ALL_TIPS_BONUS_MS : 0)
+      rawMs - unused * LEVEL8_SOAK_BONUS_MS - (allTips ? LEVEL8_ALL_TIPS_BONUS_MS : 0) - surgeBonus
     )
     const prevBest = sanitizeStoredBest(currentLevelRef.current, Number(highScoreRef.current) || 0)
     const isRecord = prevBest <= 0 || timeMs < prevBest
@@ -522,10 +587,20 @@ export function createLevel8Session(deps) {
       rainLeft = LEVEL8_RAIN_WINDOW_S
       stormLocked = true
       city.setRainHeavy(true)
+      people.setPace(1.28)
       armCheckpoint('school')
     } else if (result.kind === 'spaza') {
       city.setWaterStage(3)
+      surgeLeft = LEVEL8_SURGE_S
+      people.setPace(1.55)
       armCheckpoint('spaza')
+    } else if (result.kind === 'bag') {
+      paintSandbags()
+      if (result.done) {
+        lightningT = 0.7
+        ambient.thunder()
+        completeLevel()
+      }
     }
     carryCrateVisual()
   }
@@ -551,6 +626,8 @@ export function createLevel8Session(deps) {
     invulnT = 0
     failReason = 'soak'
     stormLocked = false
+    surgeLeft = 0
+    people.setPace(1)
     respawnMs = 0
     graceT = 0
     flashT = 0
@@ -578,6 +655,7 @@ export function createLevel8Session(deps) {
     resetLevel8Tips(tipData)
     resetLevel8Coins(coinData, coinMeshes)
     resetLevel8Hearts(heartData)
+    paintSandbags()
     lastHudSig = ''
     applyStormLook(false)
     setHud((h) => ({
@@ -603,6 +681,8 @@ export function createLevel8Session(deps) {
       carryingCrate: false,
       sprinting: false,
       rainHeavy: false,
+      surgeLeft: 0,
+      bagsPlaced: 0,
       checkpointFlashAt: 0,
       soakFlashAt: 0,
       navigatorMessage: LEVEL8_NAVIGATOR.spawn,
@@ -691,7 +771,7 @@ export function createLevel8Session(deps) {
       if (rainLeft <= 0) city.setRainHeavy(false)
     }
     let thunderNow = false
-    if (stormOn && lightningT <= 0 && Math.random() < dt * 0.72) {
+    if (stormOn && lightningT <= 0 && Math.random() < dt * (surgeLeft > 0 ? 1.15 : 0.72)) {
       lightningT = 0.16 + Math.random() * 0.14
       thunderNow = true
     }
@@ -710,6 +790,7 @@ export function createLevel8Session(deps) {
     updateLevel8TipMeshes(tipMeshes, tipData, t)
     updateCollectibleInstances(coinMeshes, coinData, t)
     updateLevel8HeartMeshes(heartMeshes, heartData, t)
+    paintSandbags()
     carryCrateVisual()
 
     const frozen = !started || gameOver || won
@@ -726,6 +807,14 @@ export function createLevel8Session(deps) {
 
     runElapsedMs += dt * 1000
     graceT = Math.max(0, graceT - dt)
+    if (surgeLeft > 0 && beats.spaza && bagsPlaced(beats) < 3) {
+      surgeLeft = Math.max(0, surgeLeft - dt)
+      if (surgeLeft <= 0) {
+        people.setPace(1)
+        failRun('surge')
+        return
+      }
+    }
 
     const bark = people.pollBark(pos.x, pos.z, stormOn)
     const honk = people.pollHonk()
@@ -765,6 +854,13 @@ export function createLevel8Session(deps) {
       pos.x = resolved.x
       pos.z = resolved.z
       characterYaw = Math.atan2(-ix, -iz)
+    }
+    if (stormOn && Math.abs(pos.x) < 8) {
+      const towardRoad = pos.x >= 0 ? -1 : 1
+      const strength = surgeLeft > 0 ? 2.8 : 1.15
+      const gust = resolvePlayerCollision(pos.x + towardRoad * strength * dt, pos.z)
+      pos.x = gust.x
+      pos.z = gust.z
     }
     if (sample.inCurrent) {
       const pushed = resolvePlayerCollision(
@@ -820,11 +916,6 @@ export function createLevel8Session(deps) {
 
     navArrow.update(pos, navTarget(beats), { dt })
 
-    if (Math.hypot(pos.x - LEVEL8_ANCHORS.home.x, pos.z - LEVEL8_ANCHORS.home.z) < LEVEL8_WIN_RADIUS) {
-      completeLevel()
-      return
-    }
-
     syncHud()
   }
 
@@ -861,6 +952,9 @@ export function createLevel8Session(deps) {
     disposeCoinMeshes(coinMeshes)
     city.group.remove(heartMeshes.group)
     heartMeshes.dispose()
+    sandbagGeo.dispose()
+    sandbagIdle.dispose()
+    sandbagPlaced.dispose()
     navArrow.dispose?.()
     city.dispose()
     scene.remove(sun)

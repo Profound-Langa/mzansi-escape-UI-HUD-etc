@@ -24,7 +24,7 @@ export function PauseMenu({
       >
         <button
           type="button"
-          className="start-menu__pixel-btn"
+          className="start-menu__pixel-btn start-menu__pixel-btn--primary"
           onClick={onResume}
         >
           Resume

@@ -73,13 +73,13 @@ const BRIEFINGS = {
   8: {
     title: 'Soweto Homecoming',
     setting: 'Soweto, summer storm',
-    goal: 'Check the clinic, school and spaza, then reach your family’s house on the hill.',
+    goal: 'Check the clinic, school and spaza. Then race home and sandbag the stoep — three piles — before the canal surge hits.',
     avoid:
-      'Deep water soaks you (three times and you fail). Taxis on Vilakazi Ridge hurt you — if HP hits zero the mission fails. You can continue from a checkpoint if you have a heart token; when hearts run out you start from scratch. Do not cut through the canal. Home sits west of the ridge, off the road.',
+      'Deep water soaks you (three times and you fail). After the school, wind pushes you toward the taxis. After the spaza, a surge timer starts: if the sandbags are not down, the mission fails. Taxis hurt you, and they speed up in the storm. Heart tokens let you continue; when they run out you start from scratch.',
     collect:
       'Yellow street boards sit on the sidewalk and name the road for each stop. Follow Clinic Road east, School Road west, then Spaza Lane east. Pink heart tokens let you continue after a fail. Read flood-safety notes (E) — find all 8 to cut your time.',
     controls:
-      'W A S D: move (camera follows behind you) · Shift: sprint · E: talk / pick up crate / read a note · P or Esc: pause',
+      'W A S D: move (camera follows behind you) · Shift: sprint · E: talk / crate / sandbag / note · P or Esc: pause',
   },
 }
 

@@ -342,6 +342,7 @@ export function createLevel8People(parent, opts = {}) {
   })
 
   let cancelled = false
+  let pace = 1
 
   const loadClip = (url) =>
     new Promise((resolve) => {
@@ -462,7 +463,7 @@ export function createLevel8People(parent, opts = {}) {
       }
       for (const s of standing) s.barkAt -= dt
       for (const taxi of moving) {
-        stepPath(taxi, dt)
+        stepPath(taxi, dt * pace)
         taxi.honkAt -= dt
       }
       for (const taxi of taxis) taxi.honkAt -= dt
@@ -516,6 +517,9 @@ export function createLevel8People(parent, opts = {}) {
     },
     setVisible(on) {
       group.visible = on
+    },
+    setPace(mult) {
+      pace = mult
     },
     dispose() {
       cancelled = true
